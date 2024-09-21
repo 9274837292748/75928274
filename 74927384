@@ -13,7 +13,7 @@ local skrrtButton = Instance.new("TextButton")
 skrrtButton.Name = "SkrrtButton"
 skrrtButton.Parent = screenGui
 skrrtButton.Size = UDim2.new(0, 200, 0, buttonHeight)
-skrrtButton.Position = UDim2.new(0.5, -100, 1, -buttonHeight - 10) -- Positioned at the bottom of the screen
+skrrtButton.Position = UDim2.new(0.5, -100, 0.9, -buttonHeight - 10) -- Positioned at the bottom of the screen
 skrrtButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
 skrrtButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 skrrtButton.Text = "Start Exhaust"
@@ -58,35 +58,6 @@ local function stopSmokeEmitter()
     end
 end
 
--- Function to create a title above "alexislebo"
-local function createOwnerTag(character)
-    local tag = Instance.new("BillboardGui")
-    tag.Adornee = character:FindFirstChild("Head")
-    tag.Size = UDim2.new(0, 100, 0, 50)
-    tag.StudsOffset = Vector3.new(0, 3, 0) -- Adjust height
-    tag.Parent = character:FindFirstChild("Head")
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = "SCRIPT OWNER"
-    label.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold color
-    label.TextScaled = true
-    label.Parent = tag
-end
-
--- Check for "alexislebo" every 10 seconds
-local function checkForOwner()
-    while true do
-        wait(10)
-        for _, v in ipairs(game:GetService("Players"):GetPlayers()) do
-            if v.Name == "alexislebo" then
-                createOwnerTag(v.Character or v.CharacterAdded:Wait())
-            end
-        end
-    end
-end
-
 -- Connect the button click events
 skrrtButton.MouseButton1Click:Connect(function()
     running = not running
@@ -99,40 +70,79 @@ skrrtButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Start the check for "alexislebo"
-checkForOwner()
+-- Function to create a title above "alexislebo"
+local function createTitleAbovePlayer(playerName)
+    local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
+    if targetPlayer and targetPlayer.Character then
+        local head = targetPlayer.Character:FindFirstChild("Head")
+        if head then
+            local billboardGui = Instance.new("BillboardGui")
+            billboardGui.Adornee = head
+            billboardGui.Size = UDim2.new(0, 200, 0, 50)
+            billboardGui.StudsOffset = Vector3.new(0, 3, 0) -- Offset above the head
+            billboardGui.Parent = head
 
--- Add character customizations based on rig type
-if character:FindFirstChildWhichIsA("Humanoid").RigType == Enum.HumanoidRigType.R6 then
-    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
-    humanoid.WalkSpeed = 60
-    humanoid.JumpPower = 20
-    character.Animate.walk.WalkAnim.AnimationId = "rbxassetid://129342287"
-    character.Animate.run.RunAnim.AnimationId = "rbxassetid://129342287"
-    character.Animate.fall.FallAnim.AnimationId = "rbxassetid://129342287"
-    character.Animate.idle.Animation1.AnimationId = "rbxassetid://129342287"
-    character.Animate.idle.Animation2.AnimationId = "rbxassetid://129342287"
-    character.Animate.jump.JumpAnim.AnimationId = "rbxassetid://129342287"
-
-    for _, thing in pairs(character:GetDescendants()) do
-        if thing:IsA("Part") then
-            thing.CustomPhysicalProperties = PhysicalProperties.new(0.04, 0, 0)
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.BackgroundTransparency = 1
+            textLabel.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold color
+            textLabel.TextStrokeTransparency = 1 -- No outline
+            textLabel.Text = "SCRIPT OWNER"
+            textLabel.Font = Enum.Font.SourceSansBold
+            textLabel.TextScaled = true -- Scales the text to fit the label
+            textLabel.Parent = billboardGui
         end
     end
-elseif character:FindFirstChildWhichIsA("Humanoid").RigType == Enum.HumanoidRigType.R15 then
-    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
-    humanoid.WalkSpeed = 60
-    humanoid.JumpPower = 20
-    character.Animate.walk.WalkAnim.AnimationId = "rbxassetid://3360694441"
-    character.Animate.run.RunAnim.AnimationId = "rbxassetid://3360694441"
-    character.Animate.fall.FallAnim.AnimationId = "rbxassetid://3360694441"
-    character.Animate.idle.Animation1.AnimationId = "rbxassetid://3360694441"
-    character.Animate.idle.Animation2.AnimationId = "3360694441"
-    character.Animate.jump.JumpAnim.AnimationId = "rbxassetid://3360694441"
+end
 
-    for _, thing in pairs(character:GetDescendants()) do
-        if thing:IsA("MeshPart") then
-            thing.CustomPhysicalProperties = PhysicalProperties.new(0.04, 0, 0)
+-- Function to repeatedly check for "alexislebo"
+local function checkForAlexislebo()
+    while true do
+        if not game:GetService("Players"):FindFirstChild("alexislebo") then
+            wait(5) -- Wait 5 seconds before checking again
+        else
+            createTitleAbovePlayer("alexislebo")
+            break -- Exit the loop if found
+        end
+    end
+end
+
+-- Start checking for "alexislebo"
+checkForAlexislebo()
+
+-- Add character customizations based on rig type
+local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+if humanoid then
+    if humanoid.RigType == Enum.HumanoidRigType.R6 then
+        humanoid.WalkSpeed = 60
+        humanoid.JumpPower = 20
+        humanoid.HipHeight = -0.35 -- R6 height adjustment
+        character.Animate.walk.WalkAnim.AnimationId = "rbxassetid://129342287"
+        character.Animate.run.RunAnim.AnimationId = "rbxassetid://129342287"
+        character.Animate.fall.FallAnim.AnimationId = "rbxassetid://129342287"
+        character.Animate.idle.Animation1.AnimationId = "rbxassetid://129342287"
+        character.Animate.idle.Animation2.AnimationId = "rbxassetid://129342287"
+        character.Animate.jump.JumpAnim.AnimationId = "rbxassetid://129342287"
+
+        for _, thing in pairs(character:GetDescendants()) do
+            if thing:IsA("Part") then
+                thing.CustomPhysicalProperties = PhysicalProperties.new(0.04, 0, 0)
+            end
+        end
+    elseif humanoid.RigType == Enum.HumanoidRigType.R15 then
+        humanoid.WalkSpeed = 60
+        humanoid.JumpPower = 20
+        character.Animate.walk.WalkAnim.AnimationId = "rbxassetid://3360694441"
+        character.Animate.run.RunAnim.AnimationId = "rbxassetid://3360694441"
+        character.Animate.fall.FallAnim.AnimationId = "rbxassetid://3360694441"
+        character.Animate.idle.Animation1.AnimationId = "rbxassetid://3360694441"
+        character.Animate.idle.Animation2.AnimationId = "3360694441"
+        character.Animate.jump.JumpAnim.AnimationId = "3360694441"
+
+        for _, thing in pairs(character:GetDescendants()) do
+            if thing:IsA("MeshPart") then
+                thing.CustomPhysicalProperties = PhysicalProperties.new(0.04, 0, 0)
+            end
         end
     end
 end

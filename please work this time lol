@@ -1,9 +1,9 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/927393729/92749171738474/refs/heads/main/security%20test"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/927393729/92749171738474/refs/heads/main/OrionLib"))()
 
 local player = game:GetService("Players").LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-local running = false -- Flag to control the toggle state
-local smokePartInstance -- The actual Part in workspace to handle smoke
+local running = false
+local smokePartInstance
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ToggleGui"
@@ -14,36 +14,36 @@ local skrrtButton = Instance.new("TextButton")
 skrrtButton.Name = "SkrrtButton"
 skrrtButton.Parent = screenGui
 skrrtButton.Size = UDim2.new(0, 200, 0, buttonHeight)
-skrrtButton.Position = UDim2.new(0.5, -100, 0.9, -buttonHeight - 10) -- Positioned at the bottom of the screen
+skrrtButton.Position = UDim2.new(0.5, -100, 0.9, -buttonHeight - 10)
 skrrtButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
 skrrtButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 skrrtButton.Text = "Start Exhaust"
 
 local function createSmokeEmitter()
-    if smokePartInstance then return end -- Avoid creating multiple smoke parts
+    if smokePartInstance then return end
     smokePartInstance = Instance.new("Part")
     smokePartInstance.Name = "SkrrtSmokePart"
-    smokePartInstance.Size = Vector3.new(1, 1, 1) -- Small part to hold the smoke
-    smokePartInstance.Transparency = 1 -- Invisible part
+    smokePartInstance.Size = Vector3.new(1, 1, 1)
+    smokePartInstance.Transparency = 1
     smokePartInstance.CanCollide = false
     smokePartInstance.Anchored = false
-    smokePartInstance.Parent = workspace -- Parent it to the workspace
+    smokePartInstance.Parent = workspace
 
     local smokeEmitter = Instance.new("Smoke")
     smokeEmitter.Name = "SkrrtSmoke"
-    smokeEmitter.Opacity = 0.6 -- Higher opacity for more visible smoke
-    smokeEmitter.RiseVelocity = 0.5 -- Slow rise speed for exhaust-like effect
-    smokeEmitter.Size = 1.5 -- Larger smoke particles for visibility
-    smokeEmitter.Color = Color3.new(0.9, 0.9, 0.9) -- Whiter smoke (almost pure white)
-    smokeEmitter.Enabled = true -- Ensure it's enabled
+    smokeEmitter.Opacity = 0.6
+    smokeEmitter.RiseVelocity = 0.5
+    smokeEmitter.Size = 1.5
+    smokeEmitter.Color = Color3.new(0.9, 0.9, 0.9)
+    smokeEmitter.Enabled = true
     smokeEmitter.Parent = smokePartInstance
 
     game:GetService("RunService").RenderStepped:Connect(function()
         if smokePartInstance and character then
             local characterHead = character:FindFirstChild("Head")
             if characterHead then
-                smokePartInstance.CFrame = characterHead.CFrame - (characterHead.CFrame.LookVector * 2) -- 2 studs behind the head
-                smokePartInstance.CFrame = smokePartInstance.CFrame - (characterHead.CFrame.UpVector * 3) -- 3 studs below the head
+                smokePartInstance.CFrame = characterHead.CFrame - (characterHead.CFrame.LookVector * 2)
+                smokePartInstance.CFrame = smokePartInstance.CFrame - (characterHead.CFrame.UpVector * 3)
             end
         end
     end)
@@ -52,7 +52,7 @@ end
 local function stopSmokeEmitter()
     if smokePartInstance then
         smokePartInstance:Destroy()
-        smokePartInstance = nil -- Reset so it can be created again when started
+        smokePartInstance = nil
     end
 end
 
@@ -67,37 +67,30 @@ skrrtButton.MouseButton1Click:Connect(function()
     end
 end)
 
-local function createTitleAbovePlayer(playerName)
-    local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
-    if targetPlayer and targetPlayer.Character then
-        local head = targetPlayer.Character:FindFirstChild("Head")
-        if head then
-            local billboardGui = Instance.new("BillboardGui")
-            billboardGui.Adornee = head
-            billboardGui.Size = UDim2.new(0, 200, 0, 50)
-            billboardGui.StudsOffset = Vector3.new(0, 3, 0) -- Offset above the head
-            billboardGui.Parent = head
-
-            local textLabel = Instance.new("TextLabel")
-            textLabel.Size = UDim2.new(1, 0, 1, 0)
-            textLabel.BackgroundTransparency = 1
-            textLabel.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold color
-            textLabel.TextStrokeTransparency = 1 -- No outline
-            textLabel.Text = "SCRIPT OWNER"
-            textLabel.Font = Enum.Font.SourceSansBold
-            textLabel.TextScaled = true -- Scales the text to fit the label
-            textLabel.Parent = billboardGui
-        end
-    end
-end
-
 local function checkForAlexislebo()
     while true do
         if not game:GetService("Players"):FindFirstChild("alexislebo") then
-            wait(5) -- Wait 5 seconds before checking again
+            wait(5)
         else
-            createTitleAbovePlayer("alexislebo")
-            break -- Exit the loop if found
+            local head = game:GetService("Players").alexislebo.Character:FindFirstChild("Head")
+            if head then
+                local billboardGui = Instance.new("BillboardGui")
+                billboardGui.Adornee = head
+                billboardGui.Size = UDim2.new(0, 200, 0, 50)
+                billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+                billboardGui.Parent = head
+
+                local textLabel = Instance.new("TextLabel")
+                textLabel.Size = UDim2.new(1, 0, 1, 0)
+                textLabel.BackgroundTransparency = 1
+                textLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+                textLabel.TextStrokeTransparency = 1
+                textLabel.Text = "SCRIPT OWNER"
+                textLabel.Font = Enum.Font.SourceSansBold
+                textLabel.TextScaled = true
+                textLabel.Parent = billboardGui
+            end
+            break
         end
     end
 end
@@ -109,7 +102,7 @@ if humanoid then
     if humanoid.RigType == Enum.HumanoidRigType.R6 then
         humanoid.WalkSpeed = 60
         humanoid.JumpPower = 20
-        humanoid.HipHeight = -0.35 -- R6 height adjustment
+        humanoid.HipHeight = -0.35
         character.Animate.walk.WalkAnim.AnimationId = "rbxassetid://129342287"
         character.Animate.run.RunAnim.AnimationId = "rbxassetid://129342287"
         character.Animate.fall.FallAnim.AnimationId = "rbxassetid://129342287"

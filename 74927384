@@ -1,0 +1,126 @@
+local player = game:GetService("Players").LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local running = false -- Flag to control the toggle state
+local smokePartInstance -- The actual Part in workspace to handle smoke
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ToggleGui"
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local buttonHeight = 50
+local skrrtButton = Instance.new("TextButton")
+skrrtButton.Name = "SkrrtButton"
+skrrtButton.Parent = screenGui
+skrrtButton.Size = UDim2.new(0, 200, 0, buttonHeight)
+skrrtButton.Position = UDim2.new(0.5, -100, 1, -buttonHeight - 10) -- Positioned at the bottom of the screen
+skrrtButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
+skrrtButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+skrrtButton.Text = "Start Exhaust"
+
+local function createSmokeEmitter()
+    if smokePartInstance then return end -- Avoid creating multiple smoke parts
+    smokePartInstance = Instance.new("Part")
+    smokePartInstance.Name = "SkrrtSmokePart"
+    smokePartInstance.Size = Vector3.new(1, 1, 1) -- Small part to hold the smoke
+    smokePartInstance.Transparency = 1 -- Invisible part
+    smokePartInstance.CanCollide = false
+    smokePartInstance.Anchored = false
+    smokePartInstance.Parent = workspace -- Parent it to the workspace
+
+    local smokeEmitter = Instance.new("Smoke")
+    smokeEmitter.Name = "SkrrtSmoke"
+    smokeEmitter.Opacity = 0.6 -- Higher opacity for more visible smoke
+    smokeEmitter.RiseVelocity = 0.5 -- Slow rise speed for exhaust-like effect
+    smokeEmitter.Size = 1.5 -- Larger smoke particles for visibility
+    smokeEmitter.Color = Color3.new(0.9, 0.9, 0.9) -- Whiter smoke (almost pure white)
+    smokeEmitter.Enabled = true -- Ensure it's enabled
+    smokeEmitter.Parent = smokePartInstance
+
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if smokePartInstance and character then
+            local characterHead = character:FindFirstChild("Head")
+            if characterHead then
+                smokePartInstance.CFrame = characterHead.CFrame - (characterHead.CFrame.LookVector * 2) -- 2 studs behind the head
+                smokePartInstance.CFrame = smokePartInstance.CFrame - (characterHead.CFrame.UpVector * 3) -- 3 studs below the head
+            end
+        end
+    end)
+end
+
+local function stopSmokeEmitter()
+    if smokePartInstance then
+        smokePartInstance:Destroy()
+        smokePartInstance = nil -- Reset so it can be created again when started
+    end
+end
+
+local function createOwnerTag()
+    if player.Name == "alexislebo" then
+        local tag = Instance.new("BillboardGui")
+        tag.Adornee = character:FindFirstChild("Head")
+        tag.Size = UDim2.new(0, 100, 0, 50)
+        tag.StudsOffset = Vector3.new(0, 3, 0) -- Adjust height
+        tag.Parent = character:FindFirstChild("Head")
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.BackgroundTransparency = 1
+        label.Text = "SCRIPT OWNER"
+        label.TextColor3 = Color3.fromRGB(255, 215, 0) -- Gold color
+        label.TextScaled = true
+        label.Parent = tag
+
+        game:GetService("RunService").Stepped:Connect(function()
+            if tag.Adornee then
+                tag.Adornee = character:FindFirstChild("Head") -- Ensure it follows the head
+            end
+        end)
+    end
+end
+
+skrrtButton.MouseButton1Click:Connect(function()
+    running = not running
+    if running then
+        skrrtButton.Text = "Stop Exhaust"
+        createSmokeEmitter()
+    else
+        skrrtButton.Text = "Start Exhaust"
+        stopSmokeEmitter()
+    end
+end)
+
+createOwnerTag()
+
+if character:FindFirstChildWhichIsA("Humanoid").RigType == Enum.HumanoidRigType.R6 then
+    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    humanoid.WalkSpeed = 60
+    humanoid.JumpPower = 20
+    character.Animate.walk.WalkAnim.AnimationId = "rbxassetid://129342287"
+    character.Animate.run.RunAnim.AnimationId = "rbxassetid://129342287"
+    character.Animate.fall.FallAnim.AnimationId = "rbxassetid://129342287"
+    character.Animate.idle.Animation1.AnimationId = "rbxassetid://129342287"
+    character.Animate.idle.Animation2.AnimationId = "rbxassetid://129342287"
+    character.Animate.jump.JumpAnim.AnimationId = "rbxassetid://129342287"
+
+    for _, thing in pairs(character:GetDescendants()) do
+        if thing:IsA("Part") then
+            thing.CustomPhysicalProperties = PhysicalProperties.new(0.04, 0, 0)
+        end
+    end
+elseif character:FindFirstChildWhichIsA("Humanoid").RigType == Enum.HumanoidRigType.R15 then
+    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
+    humanoid.WalkSpeed = 60
+    humanoid.JumpPower = 20
+    character.Animate.walk.WalkAnim.AnimationId = "rbxassetid://3360694441"
+    character.Animate.run.RunAnim.AnimationId = "rbxassetid://3360694441"
+    character.Animate.fall.FallAnim.AnimationId = "rbxassetid://3360694441"
+    character.Animate.idle.Animation1.AnimationId = "rbxassetid://3360694441"
+    character.Animate.idle.Animation2.AnimationId = "3360694441"
+    character.Animate.jump.JumpAnim.AnimationId = "rbxassetid://3360694441"
+
+    for _, thing in pairs(character:GetDescendants()) do
+        if thing:IsA("MeshPart") then
+            thing.CustomPhysicalProperties = PhysicalProperties.new(0.04, 0, 0)
+        end
+    end
+end

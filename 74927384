@@ -3,6 +3,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local running = false -- Flag to control the toggle state
 local smokePartInstance -- The actual Part in workspace to handle smoke
 
+-- Create the ScreenGui and buttons
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ToggleGui"
 screenGui.Parent = player:WaitForChild("PlayerGui")
@@ -17,6 +18,7 @@ skrrtButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
 skrrtButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 skrrtButton.Text = "Start Exhaust"
 
+-- Function to create a smoke emitter
 local function createSmokeEmitter()
     if smokePartInstance then return end -- Avoid creating multiple smoke parts
     smokePartInstance = Instance.new("Part")
@@ -36,6 +38,7 @@ local function createSmokeEmitter()
     smokeEmitter.Enabled = true -- Ensure it's enabled
     smokeEmitter.Parent = smokePartInstance
 
+    -- Update the smokePartInstance position every frame
     game:GetService("RunService").RenderStepped:Connect(function()
         if smokePartInstance and character then
             local characterHead = character:FindFirstChild("Head")
@@ -47,6 +50,7 @@ local function createSmokeEmitter()
     end)
 end
 
+-- Function to stop the smoke emitter
 local function stopSmokeEmitter()
     if smokePartInstance then
         smokePartInstance:Destroy()
@@ -54,6 +58,7 @@ local function stopSmokeEmitter()
     end
 end
 
+-- Function to create a title above "alexislebo"
 local function createOwnerTag()
     if player.Name == "alexislebo" then
         local tag = Instance.new("BillboardGui")
@@ -70,6 +75,7 @@ local function createOwnerTag()
         label.TextScaled = true
         label.Parent = tag
 
+        -- Update the tag's position to follow the player
         game:GetService("RunService").Stepped:Connect(function()
             if tag.Adornee then
                 tag.Adornee = character:FindFirstChild("Head") -- Ensure it follows the head
@@ -78,6 +84,17 @@ local function createOwnerTag()
     end
 end
 
+-- Check for "alexislebo" every 10 seconds
+local function checkForOwner()
+    while true do
+        wait(10)
+        if player.Name == "alexislebo" then
+            createOwnerTag()
+        end
+    end
+end
+
+-- Connect the button click events
 skrrtButton.MouseButton1Click:Connect(function()
     running = not running
     if running then
@@ -89,8 +106,10 @@ skrrtButton.MouseButton1Click:Connect(function()
     end
 end)
 
-createOwnerTag()
+-- Start the check for "alexislebo"
+checkForOwner()
 
+-- Add character customizations based on rig type
 if character:FindFirstChildWhichIsA("Humanoid").RigType == Enum.HumanoidRigType.R6 then
     local humanoid = character:FindFirstChildWhichIsA("Humanoid")
     humanoid.WalkSpeed = 60

